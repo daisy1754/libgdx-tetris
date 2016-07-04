@@ -18,10 +18,12 @@ public class Tetris extends ApplicationAdapter {
   private static final int STAGE_START_X = 70;
   private static final int STAGE_START_Y = 20;
   private static final int CELL_SIZE = 32;
+  private static final int MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS = 50;
   private static final int MIN_FALL_INTERVAL_MILLIS = 50;
   private static final int MIN_ROTATE_INTERVAL_MILLIS = 150;
 
   private long lastRotateMillis;
+  private long lastHorizontalMoveMillis;
   private long lastFallMillis;
   private float fallingSpeed;
   private Tetrimino currentTetrimino;
@@ -62,10 +64,14 @@ public class Tetris extends ApplicationAdapter {
     if (stage.isOnGround(currentTetrimino.getBlocks())) {
       stage.setBlocks(currentTetrimino.getBlocks());
       currentTetrimino = new Tetrimino();
-    } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+    } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)
+        && TimeUtils.millis() - lastHorizontalMoveMillis > MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS) {
       currentTetrimino.moveToLeft(stage);
-    } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+      lastHorizontalMoveMillis = TimeUtils.millis();
+    } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)
+        && TimeUtils.millis() - lastHorizontalMoveMillis > MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS) {
       currentTetrimino.moveToRight(stage);
+      lastHorizontalMoveMillis = TimeUtils.millis();
     } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)
         && TimeUtils.millis() - lastFallMillis > MIN_FALL_INTERVAL_MILLIS) {
       lastFallMillis = TimeUtils.millis();
