@@ -15,9 +15,10 @@ import static jp.gr.java_conf.daisy.tetris.Stage.NUM_ROWS;
 
 public class Tetris extends ApplicationAdapter {
 
-  private static final int STAGE_START_X = 70;
+  private static final int STAGE_START_X = 25;
   private static final int STAGE_START_Y = 20;
   private static final int CELL_SIZE = 32;
+  private static final int NEXT_TETROIMINO_SIZE = 80;
   private static final int MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS = 50;
   private static final int MIN_FALL_INTERVAL_MILLIS = 50;
   private static final int MIN_ROTATE_INTERVAL_MILLIS = 150;
@@ -27,6 +28,7 @@ public class Tetris extends ApplicationAdapter {
   private long lastFallMillis;
   private float fallingSpeed;
   private Tetrimino currentTetrimino;
+  private Tetrimino nextTetrimino;
   private OrthographicCamera camera;
   private SpriteBatch batch;
   private ShapeRenderer renderer;
@@ -45,6 +47,7 @@ public class Tetris extends ApplicationAdapter {
     fallingSpeed = 4.5f; // blocks per seconds
     stage = new Stage();
     currentTetrimino = Tetrimino.getInstance();
+    nextTetrimino = Tetrimino.getInstance();
   }
 
   @Override
@@ -63,7 +66,8 @@ public class Tetris extends ApplicationAdapter {
 
     if (stage.isOnGround(currentTetrimino.getBlocks())) {
       stage.setBlocks(currentTetrimino.getBlocks());
-      currentTetrimino = Tetrimino.getInstance();
+      currentTetrimino = nextTetrimino;
+      nextTetrimino = Tetrimino.getInstance();
     } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)
         && TimeUtils.millis() - lastHorizontalMoveMillis > MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS) {
       currentTetrimino.moveToLeft(stage);
@@ -98,11 +102,17 @@ public class Tetris extends ApplicationAdapter {
     renderer.begin(ShapeRenderer.ShapeType.Line);
     renderer.setColor(Color.RED);
     renderer.rect(STAGE_START_X - 1, STAGE_START_Y - 1, CELL_SIZE * NUM_COLUMNS + 2, CELL_SIZE * NUM_ROWS + 2);
+
+    int nextTetriminoBoxX = CELL_SIZE * NUM_COLUMNS + 2 * STAGE_START_X;
+    int nextTetriminoBoxY = STAGE_START_Y + CELL_SIZE * NUM_ROWS - NEXT_TETROIMINO_SIZE;
+    renderer.rect(nextTetriminoBoxX - 1, nextTetriminoBoxY - 1, NEXT_TETROIMINO_SIZE + 2, NEXT_TETROIMINO_SIZE + 2);
     renderer.end();
 
     renderer.begin(ShapeRenderer.ShapeType.Filled);
     renderer.setColor(Color.BLACK);
     renderer.rect(STAGE_START_X, STAGE_START_Y, CELL_SIZE * NUM_COLUMNS, CELL_SIZE * NUM_ROWS);
+    renderer.rect(nextTetriminoBoxX, nextTetriminoBoxY, NEXT_TETROIMINO_SIZE, NEXT_TETROIMINO_SIZE);
+    nextTetrimino.render(renderer, nextTetriminoBoxX, nextTetriminoBoxY, NEXT_TETROIMINO_SIZE / 4);
 
     currentTetrimino.render(renderer);
     stage.render(renderer);

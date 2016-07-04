@@ -16,24 +16,24 @@ import static jp.gr.java_conf.daisy.tetris.Stage.NUM_ROWS;
 public enum Tetrimino {
       // xx
       // xo
-      SQUARE(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{-1, 1}}),
+      SQUARE(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{-1, 1}}, new float[] {0.f, -1f}),
       //  x
       // xox
-      MOUNTAIN(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{0, 1}}),
+      MOUNTAIN(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{0, 1}}, new float[] {-0.5f, -1f}),
       // x
       // xox
-      MIRROR_L(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{-1, 1}}),
+      MIRROR_L(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{-1, 1}}, new float[] {-0.5f, -1f}),
       //   x
       // xox
-      L(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{1, 1}}),
+      L(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{1, 1}}, new float[] {-0.5f, -1f}),
       // xx
       //  ox
-      Z(new int[][] {new int[]{1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{-1, 1}}),
+      Z(new int[][] {new int[]{1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{-1, 1}}, new float[] {-0.5f, -1f}),
       //  xx
       // xo
-      S(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{1, 1}}),
+      S(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{1, 1}}, new float[] {-0.5f, -1f}),
       // xoxx
-      BAR(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{2, 0}});
+      BAR(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{2, 0}}, new float[] {-1f, -0.5f});
 
   private static final Tetrimino[] VALUES = values();
   private static Random random = new Random();
@@ -43,6 +43,8 @@ public enum Tetrimino {
   private int originRow;
   // Position of blocks relative to origin of this block
   private int[][] relativePositions;
+  private final int[][] relativePositionsOriginal;
+  private final float[] originDelta;
 
   public static Tetrimino getInstance() {
     Tetrimino tetrimino = VALUES[random.nextInt(VALUES.length)];
@@ -51,8 +53,10 @@ public enum Tetrimino {
     return tetrimino;
   }
 
-  Tetrimino(int[][] relativePositions) {
+  Tetrimino(int[][] relativePositions, float[] originDelta) {
+    this.relativePositionsOriginal = relativePositions;
     this.relativePositions = relativePositions;
+    this.originDelta = originDelta;
   }
 
   public int[][] getBlocks() {
@@ -108,6 +112,18 @@ public enum Tetrimino {
     }
   }
 
+  public void render(ShapeRenderer renderer, int startX, int startY, int boxSize) {
+    renderer.setColor(Color.GREEN);
+    int originX = startX + boxSize * 2;
+    int originY = startY + boxSize * 2;
+    for (int[] block: relativePositionsOriginal) {
+      renderer.rect(originX + (block[INDEX_COLUMN] + originDelta[INDEX_COLUMN]) * boxSize,
+          originY + (block[INDEX_ROW] + originDelta[INDEX_ROW]) * boxSize,
+          boxSize,
+          boxSize);
+    }
+  }
+  
   private int[][] getBlocks(int[][] relativePositions) {
     return new int[][] {
         new int[] {originColumn + relativePositions[0][INDEX_COLUMN], originRow + relativePositions[0][INDEX_ROW]},
