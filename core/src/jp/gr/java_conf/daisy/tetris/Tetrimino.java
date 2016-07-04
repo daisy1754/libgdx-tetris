@@ -70,6 +70,26 @@ public class Tetrimino {
     }
   }
 
+  public void moveToLeft(Stage stage) {
+    int[][] blocks = getBlocks();
+    for (int[] block: blocks) {
+      block[INDEX_COLUMN]--;
+    }
+    if (stage.canPlaceBlocks(blocks)) {
+      originColumn--;
+    }
+  }
+
+  public void moveToRight(Stage stage) {
+    int[][] blocks = getBlocks();
+    for (int[] block: blocks) {
+      block[INDEX_COLUMN]++;
+    }
+    if (stage.canPlaceBlocks(blocks)) {
+      originColumn++;
+    }
+  }
+
   public void render(ShapeRenderer renderer) {
     renderer.setColor(Color.GREEN);
     for (int[] block: getBlocks()) {

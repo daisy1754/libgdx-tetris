@@ -61,7 +61,12 @@ public class Tetris extends ApplicationAdapter {
     if (stage.isOnGround(currentTetrimino.getBlocks())) {
       stage.setBlocks(currentTetrimino.getBlocks());
       currentTetrimino = new Tetrimino();
+    } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+      currentTetrimino.moveToLeft(stage);
+    } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+      currentTetrimino.moveToRight(stage);
     }
+
     camera.update();
 
     renderStage();
