@@ -10,8 +10,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class Tetris extends ApplicationAdapter {
 
-  private static final int NUM_ROWS = 10;
-  private static final int NUM_COLUMNS = 22;
+  private static final int NUM_COLUMNS = 10;
+  private static final int NUM_ROWS = 22;
   private static final int STAGE_START_X = 70;
   private static final int STAGE_START_Y = 20;
   private static final int CELL_SIZE = 32;
@@ -52,12 +52,12 @@ public class Tetris extends ApplicationAdapter {
 
     renderer.begin(ShapeRenderer.ShapeType.Line);
     renderer.setColor(Color.RED);
-    renderer.rect(STAGE_START_X - 1, STAGE_START_Y - 1, CELL_SIZE * NUM_ROWS + 2, CELL_SIZE * NUM_COLUMNS + 2);
+    renderer.rect(STAGE_START_X - 1, STAGE_START_Y - 1, CELL_SIZE * NUM_COLUMNS + 2, CELL_SIZE * NUM_ROWS + 2);
     renderer.end();
 
     renderer.begin(ShapeRenderer.ShapeType.Filled);
     renderer.setColor(Color.BLACK);
-    renderer.rect(STAGE_START_X, STAGE_START_Y, CELL_SIZE * NUM_ROWS, CELL_SIZE * NUM_COLUMNS);
+    renderer.rect(STAGE_START_X, STAGE_START_Y, CELL_SIZE * NUM_COLUMNS, CELL_SIZE * NUM_ROWS);
     renderer.end();
   }
 }
