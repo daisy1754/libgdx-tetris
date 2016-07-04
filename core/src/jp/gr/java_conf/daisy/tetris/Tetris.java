@@ -25,6 +25,7 @@ public class Tetris extends ApplicationAdapter {
   private static final int MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS = 50;
   private static final int MIN_FALL_INTERVAL_MILLIS = 50;
   private static final int MIN_ROTATE_INTERVAL_MILLIS = 150;
+  private static final int[] SCORES = new int[] {0, 10, 30, 80, 150};
 
   private boolean isGameGoing = true;
   private long lastRotateMillis;
@@ -36,8 +37,10 @@ public class Tetris extends ApplicationAdapter {
   private OrthographicCamera camera;
   private SpriteBatch batch;
   private ShapeRenderer renderer;
-  private BitmapFont font;
+  private BitmapFont gameoverFont;
+  private BitmapFont scoreFont;
   private Stage stage;
+  private int score;
 
   public static void renderBlock(ShapeRenderer renderer, int column, int row) {
     renderer.rect(STAGE_START_X + column * CELL_SIZE, STAGE_START_Y + row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
@@ -48,8 +51,10 @@ public class Tetris extends ApplicationAdapter {
     camera = new OrthographicCamera();
     camera.setToOrtho(false, 480, 800);
     batch = new SpriteBatch();
-    font = new BitmapFont();
-    font.setColor(Color.BLUE);
+    gameoverFont = new BitmapFont();
+    gameoverFont.setColor(Color.BLUE);
+    scoreFont = new BitmapFont();
+    scoreFont.setColor(Color.WHITE);
     renderer = new ShapeRenderer();
     fallingSpeed = 4.5f; // blocks per seconds
     stage = new Stage();
@@ -65,11 +70,13 @@ public class Tetris extends ApplicationAdapter {
     if (!isGameGoing) {
       batch.setProjectionMatrix(camera.combined);
       batch.begin();
-      font.draw(batch, "Game over", (STAGE_WIDTH - ("Game over".length() / 2 * font.getLineHeight())) / 2, STAGE_HEIGHT / 2 - font.getLineHeight() / 2);
+      gameoverFont.draw(batch, "Game over", (STAGE_WIDTH - ("Game over".length() / 2 * gameoverFont.getLineHeight())) / 2, STAGE_HEIGHT / 2 - gameoverFont.getLineHeight() / 2);
       batch.end();
+      // Restart
       if (Gdx.input.isTouched() || Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
         isGameGoing = true;
         stage.reset();
+        score = 0;
         currentTetrimino = Tetrimino.getInstance();
         nextTetrimino = Tetrimino.getInstance();
       }
@@ -86,7 +93,8 @@ public class Tetris extends ApplicationAdapter {
     }
 
     if (stage.isOnGround(currentTetrimino.getBlocks())) {
-      stage.setBlocks(currentTetrimino.getBlocks());
+      int numDeletedRows = stage.setBlocks(currentTetrimino.getBlocks());
+      score += SCORES[numDeletedRows];
       currentTetrimino = nextTetrimino;
       currentTetrimino.initPosition();
       nextTetrimino = Tetrimino.getInstance();
@@ -116,7 +124,8 @@ public class Tetris extends ApplicationAdapter {
   @Override
   public void dispose() {
     batch.dispose();
-    font.dispose();
+    gameoverFont.dispose();
+    scoreFont.dispose();
   }
 
   private void renderStage() {
@@ -141,5 +150,10 @@ public class Tetris extends ApplicationAdapter {
     stage.render(renderer);
 
     renderer.end();
+
+    batch.setProjectionMatrix(camera.combined);
+    batch.begin();
+    scoreFont.draw(batch, String.format("Score: %d", score), nextTetriminoBoxX, nextTetriminoBoxY - 30);
+    batch.end();
   }
 }

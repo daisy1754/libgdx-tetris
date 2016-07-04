@@ -27,7 +27,11 @@ public class Stage {
     }
   }
 
-  public void setBlocks(int[][] blocks) {
+  /**
+   * Set the given blocks on stage.
+   * @return number of rows erased, if any.
+   */
+  public int setBlocks(int[][] blocks) {
     for (int[] block: blocks) {
       isFilled[block[INDEX_COLUMN]][block[INDEX_ROW]] = true;
     }
@@ -40,17 +44,19 @@ public class Stage {
       }
     }
     if (rowsToDelete.isEmpty()) {
-      return;
+      return 0;
     }
     int delta = 0;
     for (int r = 0; r < NUM_ROWS; r++) {
       if (rowsToDelete.contains(r)) {
         delta++;
       }
+      // Copy the row
       for (int c = 0;  c < NUM_COLUMNS; c++) {
         isFilled[c][r] = r + delta >= NUM_ROWS ? false : isFilled[c][r + delta];
       }
     }
+    return rowsToDelete.size();
   }
 
   public boolean isOnGround(int[][] blocks) {
