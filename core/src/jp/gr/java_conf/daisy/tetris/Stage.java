@@ -3,6 +3,9 @@ package jp.gr.java_conf.daisy.tetris;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static jp.gr.java_conf.daisy.tetris.Constants.INDEX_COLUMN;
 import static jp.gr.java_conf.daisy.tetris.Constants.INDEX_ROW;
 
@@ -19,6 +22,26 @@ public class Stage {
   public void setBlocks(int[][] blocks) {
     for (int[] block: blocks) {
       isFilled[block[INDEX_COLUMN]][block[INDEX_ROW]] = true;
+    }
+
+    // Check if any row is filled
+    Set<Integer> rowsToDelete = new HashSet<Integer>();
+    for (int[] block: blocks) {
+      if (isRowFilled(block[INDEX_ROW])) {
+        rowsToDelete.add(block[INDEX_ROW]);
+      }
+    }
+    if (rowsToDelete.isEmpty()) {
+      return;
+    }
+    int delta = 0;
+    for (int r = 0; r < NUM_ROWS; r++) {
+      if (rowsToDelete.contains(r)) {
+        delta++;
+      }
+      for (int c = 0;  c < NUM_COLUMNS; c++) {
+        isFilled[c][r] = r + delta >= NUM_ROWS ? false : isFilled[c][r + delta];
+      }
     }
   }
 
@@ -54,5 +77,14 @@ public class Stage {
         }
       }
     }
+  }
+
+  private boolean isRowFilled(int r) {
+    for (int c = 0;  c < NUM_COLUMNS; c++) {
+      if (!isFilled[c][r]) {
+        return false;
+      }
+    }
+    return true;
   }
 }
