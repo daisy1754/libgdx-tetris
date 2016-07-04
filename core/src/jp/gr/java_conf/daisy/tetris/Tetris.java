@@ -20,8 +20,7 @@ public class Tetris extends ApplicationAdapter {
 
   private long lastFallMillis;
   private float fallingSpeed;
-  private int currentBlockColumn;
-  private int currentBlockRow;
+  private Tetrimino currentTetrimino;
   private OrthographicCamera camera;
   private SpriteBatch batch;
   private ShapeRenderer renderer;
@@ -39,7 +38,7 @@ public class Tetris extends ApplicationAdapter {
     renderer = new ShapeRenderer();
     fallingSpeed = 5.5f; // 7 blocks per seconds
     stage = new Stage();
-    generateNewBlock();
+    currentTetrimino = new Tetrimino();
   }
 
   @Override
@@ -49,9 +48,10 @@ public class Tetris extends ApplicationAdapter {
 
     if (TimeUtils.millis() - lastFallMillis > (1 / fallingSpeed) * 1000) {
       lastFallMillis = TimeUtils.millis();
-      if (fall()) {
-        stage.setBlock(currentBlockColumn, currentBlockRow);
-        generateNewBlock();
+      currentTetrimino.fall();
+      if (stage.isOnGround(currentTetrimino.getBlocks())) {
+        stage.setBlocks(currentTetrimino.getBlocks());
+        currentTetrimino = new Tetrimino();
       }
     }
 
@@ -81,24 +81,9 @@ public class Tetris extends ApplicationAdapter {
     renderer.setColor(Color.BLACK);
     renderer.rect(STAGE_START_X, STAGE_START_Y, CELL_SIZE * NUM_COLUMNS, CELL_SIZE * NUM_ROWS);
 
-    renderer.setColor(Color.GREEN);
-    renderBlock(renderer, currentBlockColumn, currentBlockRow);
-
+    currentTetrimino.render(renderer);
     stage.render(renderer);
+
     renderer.end();
-  }
-
-  private void generateNewBlock() {
-    currentBlockColumn = NUM_COLUMNS / 2;
-    currentBlockRow = NUM_ROWS - 1;
-  }
-
-  /**
-   * Move current block down.
-   * @return whether block needs to top at current position.
-   */
-  private boolean fall() {
-    currentBlockRow--;
-    return currentBlockRow <= 0 || stage.isFilled(currentBlockColumn, currentBlockRow - 1);
   }
 }

@@ -1,7 +1,11 @@
 package jp.gr.java_conf.daisy.tetris;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
+import static jp.gr.java_conf.daisy.tetris.Constants.INDEX_COLUMN;
+import static jp.gr.java_conf.daisy.tetris.Constants.INDEX_ROW;
 
 /**
  * Holds the state of current stage, i.e., where blocks exist.
@@ -13,12 +17,20 @@ public class Stage {
 
   private boolean[][] isFilled = new boolean[NUM_COLUMNS][NUM_ROWS];
 
-  public void setBlock(int column, int row) {
-    isFilled[column][row] = true;
+  public void setBlocks(int[][] blocks) {
+    for (int[] block: blocks) {
+      isFilled[block[INDEX_COLUMN]][block[INDEX_ROW]] = true;
+    }
   }
 
-  public boolean isFilled(int column, int row) {
-    return isFilled[column][row];
+  public boolean isOnGround(int[][] blocks) {
+    for (int[] block: blocks) {
+      if (block[INDEX_ROW] <= 0 || isFilled[block[INDEX_COLUMN]][block[INDEX_ROW] - 1]) {
+        Gdx.app.debug("Stage", "Now on ground " + block[INDEX_ROW] + "|" + blocks);
+        return true;
+      }
+    }
+    return false;
   }
 
   public void render(ShapeRenderer renderer) {
