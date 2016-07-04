@@ -6,10 +6,13 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import static jp.gr.java_conf.daisy.tetris.Constants.STAGE_HEIGHT;
+import static jp.gr.java_conf.daisy.tetris.Constants.STAGE_WIDTH;
 import static jp.gr.java_conf.daisy.tetris.Stage.NUM_COLUMNS;
 import static jp.gr.java_conf.daisy.tetris.Stage.NUM_ROWS;
 
@@ -23,6 +26,7 @@ public class Tetris extends ApplicationAdapter {
   private static final int MIN_FALL_INTERVAL_MILLIS = 50;
   private static final int MIN_ROTATE_INTERVAL_MILLIS = 150;
 
+  private boolean isGameGoing = true;
   private long lastRotateMillis;
   private long lastHorizontalMoveMillis;
   private long lastFallMillis;
@@ -32,6 +36,7 @@ public class Tetris extends ApplicationAdapter {
   private OrthographicCamera camera;
   private SpriteBatch batch;
   private ShapeRenderer renderer;
+  private BitmapFont font;
   private Stage stage;
 
   public static void renderBlock(ShapeRenderer renderer, int column, int row) {
@@ -43,6 +48,8 @@ public class Tetris extends ApplicationAdapter {
     camera = new OrthographicCamera();
     camera.setToOrtho(false, 480, 800);
     batch = new SpriteBatch();
+    font = new BitmapFont();
+    font.setColor(Color.BLUE);
     renderer = new ShapeRenderer();
     fallingSpeed = 4.5f; // blocks per seconds
     stage = new Stage();
@@ -54,6 +61,14 @@ public class Tetris extends ApplicationAdapter {
   public void render() {
     Gdx.gl.glClearColor(0, 0, 0.2f, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+    if (!isGameGoing) {
+      batch.setProjectionMatrix(camera.combined);
+      batch.begin();
+      font.draw(batch, "Game over", (STAGE_WIDTH - ("Game over".length() / 2 * font.getLineHeight())) / 2, STAGE_HEIGHT / 2 - font.getLineHeight() / 2);
+      batch.end();
+      return;
+    }
 
     boolean rotateInput = Gdx.input.isTouched() || Gdx.input.isKeyPressed(Input.Keys.SPACE);
     if (TimeUtils.millis() - lastFallMillis > (1 / fallingSpeed) * 1000) {
@@ -68,6 +83,10 @@ public class Tetris extends ApplicationAdapter {
       stage.setBlocks(currentTetrimino.getBlocks());
       currentTetrimino = nextTetrimino;
       nextTetrimino = Tetrimino.getInstance();
+      if (stage.isOnGround(currentTetrimino.getBlocks())) {
+        isGameGoing = false;
+        return;
+      }
     } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)
         && TimeUtils.millis() - lastHorizontalMoveMillis > MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS) {
       currentTetrimino.moveToLeft(stage);
@@ -85,15 +104,12 @@ public class Tetris extends ApplicationAdapter {
     camera.update();
 
     renderStage();
-
-    batch.setProjectionMatrix(camera.combined);
-    batch.begin();
-    batch.end();
   }
 
   @Override
   public void dispose() {
     batch.dispose();
+    font.dispose();
   }
 
   private void renderStage() {

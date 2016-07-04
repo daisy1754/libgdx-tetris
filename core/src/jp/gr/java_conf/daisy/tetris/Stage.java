@@ -47,6 +47,9 @@ public class Stage {
 
   public boolean isOnGround(int[][] blocks) {
     for (int[] block: blocks) {
+      if (block[INDEX_ROW] - 1 >= NUM_ROWS) {
+        continue;
+      }
       if (block[INDEX_ROW] <= 0 || isFilled[block[INDEX_COLUMN]][block[INDEX_ROW] - 1]) {
         return true;
       }
