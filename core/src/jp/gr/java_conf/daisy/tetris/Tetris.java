@@ -9,10 +9,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import static jp.gr.java_conf.daisy.tetris.Stage.NUM_COLUMNS;
+import static jp.gr.java_conf.daisy.tetris.Stage.NUM_ROWS;
+
 public class Tetris extends ApplicationAdapter {
 
-  private static final int NUM_COLUMNS = 10;
-  private static final int NUM_ROWS = 22;
   private static final int STAGE_START_X = 70;
   private static final int STAGE_START_Y = 20;
   private static final int CELL_SIZE = 32;
@@ -24,6 +25,11 @@ public class Tetris extends ApplicationAdapter {
   private OrthographicCamera camera;
   private SpriteBatch batch;
   private ShapeRenderer renderer;
+  private Stage stage;
+
+  public static void renderBlock(ShapeRenderer renderer, int column, int row) {
+    renderer.rect(STAGE_START_X + column * CELL_SIZE, STAGE_START_Y + row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+  }
 
   @Override
   public void create() {
@@ -32,6 +38,8 @@ public class Tetris extends ApplicationAdapter {
     batch = new SpriteBatch();
     renderer = new ShapeRenderer();
     fallingSpeed = 5.5f; // 7 blocks per seconds
+    stage = new Stage();
+    generateNewBlock();
   }
 
   @Override
@@ -42,6 +50,7 @@ public class Tetris extends ApplicationAdapter {
     if (TimeUtils.millis() - lastFallMillis > (1 / fallingSpeed) * 1000) {
       lastFallMillis = TimeUtils.millis();
       if (fall()) {
+        stage.setBlock(currentBlockColumn, currentBlockRow);
         generateNewBlock();
       }
     }
@@ -72,8 +81,10 @@ public class Tetris extends ApplicationAdapter {
     renderer.setColor(Color.BLACK);
     renderer.rect(STAGE_START_X, STAGE_START_Y, CELL_SIZE * NUM_COLUMNS, CELL_SIZE * NUM_ROWS);
 
-    renderer.setColor(Color.GRAY);
-    renderer.rect(STAGE_START_X + currentBlockColumn * CELL_SIZE, STAGE_START_Y + currentBlockRow * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+    renderer.setColor(Color.GREEN);
+    renderBlock(renderer, currentBlockColumn, currentBlockRow);
+
+    stage.render(renderer);
     renderer.end();
   }
 
@@ -88,6 +99,6 @@ public class Tetris extends ApplicationAdapter {
    */
   private boolean fall() {
     currentBlockRow--;
-    return currentBlockRow < 0;
+    return currentBlockRow <= 0 || stage.isFilled(currentBlockColumn, currentBlockRow - 1);
   }
 }
