@@ -18,6 +18,7 @@ public class Tetris extends ApplicationAdapter {
   private static final int STAGE_START_X = 70;
   private static final int STAGE_START_Y = 20;
   private static final int CELL_SIZE = 32;
+  private static final int MIN_FALL_INTERVAL_MILLIS = 50;
   private static final int MIN_ROTATE_INTERVAL_MILLIS = 150;
 
   private long lastRotateMillis;
@@ -39,7 +40,7 @@ public class Tetris extends ApplicationAdapter {
     camera.setToOrtho(false, 480, 800);
     batch = new SpriteBatch();
     renderer = new ShapeRenderer();
-    fallingSpeed = 5.5f; // 7 blocks per seconds
+    fallingSpeed = 4.5f; // blocks per seconds
     stage = new Stage();
     currentTetrimino = new Tetrimino();
   }
@@ -65,6 +66,10 @@ public class Tetris extends ApplicationAdapter {
       currentTetrimino.moveToLeft(stage);
     } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
       currentTetrimino.moveToRight(stage);
+    } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)
+        && TimeUtils.millis() - lastFallMillis > MIN_FALL_INTERVAL_MILLIS) {
+      lastFallMillis = TimeUtils.millis();
+      currentTetrimino.fall();
     }
 
     camera.update();
