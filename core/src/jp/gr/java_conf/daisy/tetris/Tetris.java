@@ -44,7 +44,7 @@ public class Tetris extends ApplicationAdapter {
     renderer = new ShapeRenderer();
     fallingSpeed = 4.5f; // blocks per seconds
     stage = new Stage();
-    currentTetrimino = new Tetrimino();
+    currentTetrimino = Tetrimino.getInstance();
   }
 
   @Override
@@ -63,7 +63,7 @@ public class Tetris extends ApplicationAdapter {
 
     if (stage.isOnGround(currentTetrimino.getBlocks())) {
       stage.setBlocks(currentTetrimino.getBlocks());
-      currentTetrimino = new Tetrimino();
+      currentTetrimino = Tetrimino.getInstance();
     } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)
         && TimeUtils.millis() - lastHorizontalMoveMillis > MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS) {
       currentTetrimino.moveToLeft(stage);

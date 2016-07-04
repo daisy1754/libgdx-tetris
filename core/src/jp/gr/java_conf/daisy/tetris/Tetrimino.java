@@ -3,6 +3,8 @@ package jp.gr.java_conf.daisy.tetris;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import java.util.Random;
+
 import static jp.gr.java_conf.daisy.tetris.Constants.INDEX_COLUMN;
 import static jp.gr.java_conf.daisy.tetris.Constants.INDEX_ROW;
 import static jp.gr.java_conf.daisy.tetris.Stage.NUM_COLUMNS;
@@ -11,40 +13,46 @@ import static jp.gr.java_conf.daisy.tetris.Stage.NUM_ROWS;
 /**
  * Group of four square that falling together.
  */
-public class Tetrimino {
-
-  private static final int[][][] TETORIMINOS = new int[][][] {
+public enum Tetrimino {
       // xx
       // xo
-      new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{-1, 1}},
+      SQUARE(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{-1, 1}}),
       //  x
       // xox
-      new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{0, 1}},
+      MOUNTAIN(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{0, 1}}),
       // x
       // xox
-      new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{-1, 1}},
+      MIRROR_L(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{-1, 1}}),
       //   x
       // xox
-      new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{1, 1}},
+      L(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{1, 1}}),
       // xx
       //  ox
-      new int[][] {new int[]{1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{-1, 1}},
+      Z(new int[][] {new int[]{1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{-1, 1}}),
       //  xx
       // xo
-      new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{1, 1}},
+      S(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{1, 1}}),
       // xoxx
-      new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{2, 0}}
-  };
+      BAR(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{2, 0}});
+
+  private static final Tetrimino[] VALUES = values();
+  private static Random random = new Random();
+
   // Position of "origin" of this tetrimino
   private int originColumn;
   private int originRow;
   // Position of blocks relative to origin of this block
   private int[][] relativePositions;
 
-  public Tetrimino() {
-    originColumn = NUM_COLUMNS / 2;
-    originRow = NUM_ROWS - 1;
-    relativePositions = TETORIMINOS[(int) (Math.random() * TETORIMINOS.length)];
+  public static Tetrimino getInstance() {
+    Tetrimino tetrimino = VALUES[random.nextInt(VALUES.length)];
+    tetrimino.originColumn = NUM_COLUMNS / 2;
+    tetrimino.originRow = NUM_ROWS - 1;
+    return tetrimino;
+  }
+
+  Tetrimino(int[][] relativePositions) {
+    this.relativePositions = relativePositions;
   }
 
   public int[][] getBlocks() {
@@ -59,6 +67,9 @@ public class Tetrimino {
   }
 
   public void rotate(Stage stage) {
+    if (this == SQUARE) {
+      return;
+    }
     int[][] rotated = new int[][] {
         new int[] {-relativePositions[0][INDEX_ROW], relativePositions[0][INDEX_COLUMN]},
         new int[] {-relativePositions[1][INDEX_ROW], relativePositions[1][INDEX_COLUMN]},
