@@ -1,6 +1,5 @@
 package jp.gr.java_conf.daisy.tetris;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
@@ -26,11 +25,24 @@ public class Stage {
   public boolean isOnGround(int[][] blocks) {
     for (int[] block: blocks) {
       if (block[INDEX_ROW] <= 0 || isFilled[block[INDEX_COLUMN]][block[INDEX_ROW] - 1]) {
-        Gdx.app.debug("Stage", "Now on ground " + block[INDEX_ROW] + "|" + blocks);
         return true;
       }
     }
     return false;
+  }
+
+  /**
+   * Returns if given blocks are inside the stage and has no conflict with existing blocks.
+   */
+  public boolean canPlaceBlocks(int[][] blocks) {
+    for (int[] block: blocks) {
+      int row = block[INDEX_ROW];
+      int column = block[INDEX_COLUMN];
+      if (row < 0 || column < 0 || row >= NUM_ROWS || column >= NUM_COLUMNS || isFilled[column][row]) {
+        return false;
+      }
+    }
+    return true;
   }
 
   public void render(ShapeRenderer renderer) {

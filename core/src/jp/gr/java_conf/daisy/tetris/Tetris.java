@@ -2,6 +2,7 @@ package jp.gr.java_conf.daisy.tetris;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -17,7 +18,9 @@ public class Tetris extends ApplicationAdapter {
   private static final int STAGE_START_X = 70;
   private static final int STAGE_START_Y = 20;
   private static final int CELL_SIZE = 32;
+  private static final int MIN_ROTATE_INTERVAL_MILLIS = 150;
 
+  private long lastRotateMillis;
   private long lastFallMillis;
   private float fallingSpeed;
   private Tetrimino currentTetrimino;
@@ -46,15 +49,19 @@ public class Tetris extends ApplicationAdapter {
     Gdx.gl.glClearColor(0, 0, 0.2f, 1);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+    boolean rotateInput = Gdx.input.isTouched() || Gdx.input.isKeyPressed(Input.Keys.SPACE);
     if (TimeUtils.millis() - lastFallMillis > (1 / fallingSpeed) * 1000) {
       lastFallMillis = TimeUtils.millis();
       currentTetrimino.fall();
-      if (stage.isOnGround(currentTetrimino.getBlocks())) {
-        stage.setBlocks(currentTetrimino.getBlocks());
-        currentTetrimino = new Tetrimino();
-      }
+    } else if (rotateInput && TimeUtils.millis() - lastRotateMillis > MIN_ROTATE_INTERVAL_MILLIS) {
+      currentTetrimino.rotate(stage);
+      lastRotateMillis = TimeUtils.millis();
     }
 
+    if (stage.isOnGround(currentTetrimino.getBlocks())) {
+      stage.setBlocks(currentTetrimino.getBlocks());
+      currentTetrimino = new Tetrimino();
+    }
     camera.update();
 
     renderStage();

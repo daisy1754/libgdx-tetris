@@ -48,12 +48,7 @@ public class Tetrimino {
   }
 
   public int[][] getBlocks() {
-    return new int[][] {
-        new int[] {originColumn + relativePositions[0][INDEX_COLUMN], originRow + relativePositions[0][INDEX_ROW]},
-        new int[] {originColumn + relativePositions[1][INDEX_COLUMN], originRow + relativePositions[1][INDEX_ROW]},
-        new int[] {originColumn + relativePositions[2][INDEX_COLUMN], originRow + relativePositions[2][INDEX_ROW]},
-        new int[] {originColumn + relativePositions[3][INDEX_COLUMN], originRow + relativePositions[3][INDEX_ROW]}
-    };
+    return getBlocks(relativePositions);
   }
 
   /**
@@ -63,10 +58,31 @@ public class Tetrimino {
     originRow--;
   }
 
+  public void rotate(Stage stage) {
+    int[][] rotated = new int[][] {
+        new int[] {-relativePositions[0][INDEX_ROW], relativePositions[0][INDEX_COLUMN]},
+        new int[] {-relativePositions[1][INDEX_ROW], relativePositions[1][INDEX_COLUMN]},
+        new int[] {-relativePositions[2][INDEX_ROW], relativePositions[2][INDEX_COLUMN]},
+        new int[] {-relativePositions[3][INDEX_ROW], relativePositions[3][INDEX_COLUMN]}};
+    int[][] newPositions = getBlocks(rotated);
+    if (stage.canPlaceBlocks(newPositions)) {
+      relativePositions = rotated;
+    }
+  }
+
   public void render(ShapeRenderer renderer) {
     renderer.setColor(Color.GREEN);
     for (int[] block: getBlocks()) {
       Tetris.renderBlock(renderer, block[INDEX_COLUMN], block[INDEX_ROW]);
     }
+  }
+
+  private int[][] getBlocks(int[][] relativePositions) {
+    return new int[][] {
+        new int[] {originColumn + relativePositions[0][INDEX_COLUMN], originRow + relativePositions[0][INDEX_ROW]},
+        new int[] {originColumn + relativePositions[1][INDEX_COLUMN], originRow + relativePositions[1][INDEX_ROW]},
+        new int[] {originColumn + relativePositions[2][INDEX_COLUMN], originRow + relativePositions[2][INDEX_ROW]},
+        new int[] {originColumn + relativePositions[3][INDEX_COLUMN], originRow + relativePositions[3][INDEX_ROW]}
+    };
   }
 }
