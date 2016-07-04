@@ -82,6 +82,7 @@ public class Tetris extends ApplicationAdapter {
     if (stage.isOnGround(currentTetrimino.getBlocks())) {
       stage.setBlocks(currentTetrimino.getBlocks());
       currentTetrimino = nextTetrimino;
+      currentTetrimino.initPosition();
       nextTetrimino = Tetrimino.getInstance();
       if (stage.isOnGround(currentTetrimino.getBlocks())) {
         isGameGoing = false;

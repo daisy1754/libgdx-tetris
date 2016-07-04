@@ -48,8 +48,7 @@ public enum Tetrimino {
 
   public static Tetrimino getInstance() {
     Tetrimino tetrimino = VALUES[random.nextInt(VALUES.length)];
-    tetrimino.originColumn = NUM_COLUMNS / 2;
-    tetrimino.originRow = NUM_ROWS - 1;
+    tetrimino.initPosition();
     return tetrimino;
   }
 
@@ -57,6 +56,11 @@ public enum Tetrimino {
     this.relativePositionsOriginal = relativePositions;
     this.relativePositions = relativePositions;
     this.originDelta = originDelta;
+  }
+
+  public void initPosition() {
+    originColumn = NUM_COLUMNS / 2;
+    originRow = NUM_ROWS - 1;
   }
 
   public int[][] getBlocks() {
