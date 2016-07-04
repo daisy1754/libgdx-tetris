@@ -124,6 +124,7 @@ public class Tetris extends ApplicationAdapter {
   @Override
   public void dispose() {
     batch.dispose();
+    renderer.dispose();
     gameoverFont.dispose();
     scoreFont.dispose();
   }
