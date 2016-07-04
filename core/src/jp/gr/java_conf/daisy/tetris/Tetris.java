@@ -67,6 +67,12 @@ public class Tetris extends ApplicationAdapter {
       batch.begin();
       font.draw(batch, "Game over", (STAGE_WIDTH - ("Game over".length() / 2 * font.getLineHeight())) / 2, STAGE_HEIGHT / 2 - font.getLineHeight() / 2);
       batch.end();
+      if (Gdx.input.isTouched() || Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+        isGameGoing = true;
+        stage.reset();
+        currentTetrimino = Tetrimino.getInstance();
+        nextTetrimino = Tetrimino.getInstance();
+      }
       return;
     }
 

@@ -19,6 +19,14 @@ public class Stage {
 
   private boolean[][] isFilled = new boolean[NUM_COLUMNS][NUM_ROWS];
 
+  public void reset() {
+    for (int i = 0; i < NUM_COLUMNS; i++) {
+      for (int j = 0; j < NUM_ROWS; j++) {
+        isFilled[i][j] = false;
+      }
+    }
+  }
+
   public void setBlocks(int[][] blocks) {
     for (int[] block: blocks) {
       isFilled[block[INDEX_COLUMN]][block[INDEX_ROW]] = true;
