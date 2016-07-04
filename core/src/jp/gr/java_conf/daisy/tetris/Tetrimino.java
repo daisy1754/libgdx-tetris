@@ -13,16 +13,38 @@ import static jp.gr.java_conf.daisy.tetris.Stage.NUM_ROWS;
  */
 public class Tetrimino {
 
+  private static final int[][][] TETORIMINOS = new int[][][] {
+      // xx
+      // xo
+      new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{-1, 1}},
+      //  x
+      // xox
+      new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{0, 1}},
+      // x
+      // xox
+      new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{-1, 1}},
+      //   x
+      // xox
+      new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{1, 1}},
+      // xx
+      //  ox
+      new int[][] {new int[]{1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{-1, 1}},
+      //  xx
+      // xo
+      new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{1, 1}},
+      // xoxx
+      new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{2, 0}}
+  };
   // Position of "origin" of this tetrimino
   private int originColumn;
   private int originRow;
   // Position of blocks relative to origin of this block
-  private int[][] relativePositions = new int[][] {
-      new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{2, 0}};
+  private int[][] relativePositions;
 
   public Tetrimino() {
     originColumn = NUM_COLUMNS / 2;
     originRow = NUM_ROWS - 1;
+    relativePositions = TETORIMINOS[(int) (Math.random() * TETORIMINOS.length)];
   }
 
   public int[][] getBlocks() {
