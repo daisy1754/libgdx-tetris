@@ -13,49 +13,31 @@ import static jp.gr.java_conf.daisy.tetris.Stage.NUM_ROWS;
 /**
  * Group of four square that falling together.
  */
-public enum Tetrimino {
-      // xx
-      // xo
-      SQUARE(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{-1, 1}}, new float[] {0.f, -1f}),
-      //  x
-      // xox
-      MOUNTAIN(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{0, 1}}, new float[] {-0.5f, -1f}),
-      // x
-      // xox
-      MIRROR_L(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{-1, 1}}, new float[] {-0.5f, -1f}),
-      //   x
-      // xox
-      L(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{1, 1}}, new float[] {-0.5f, -1f}),
-      // xx
-      //  ox
-      Z(new int[][] {new int[]{1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{-1, 1}}, new float[] {-0.5f, -1f}),
-      //  xx
-      // xo
-      S(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{1, 1}}, new float[] {-0.5f, -1f}),
-      // xoxx
-      BAR(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{2, 0}}, new float[] {-1f, -0.5f});
+public class Tetrimino {
 
-  private static final Tetrimino[] VALUES = values();
+  private static final Type[] TYPE = Type.values();
   private static Random random = new Random();
 
   // Position of "origin" of this tetrimino
   private int originColumn;
   private int originRow;
+  private final Type type;
   // Position of blocks relative to origin of this block
   private int[][] relativePositions;
   private final int[][] relativePositionsOriginal;
   private final float[] originDelta;
 
   public static Tetrimino getInstance() {
-    Tetrimino tetrimino = VALUES[random.nextInt(VALUES.length)];
+    Tetrimino tetrimino = new Tetrimino(TYPE[random.nextInt(TYPE.length)]);
     tetrimino.initPosition();
     return tetrimino;
   }
 
-  Tetrimino(int[][] relativePositions, float[] originDelta) {
-    this.relativePositionsOriginal = relativePositions;
-    this.relativePositions = relativePositions;
-    this.originDelta = originDelta;
+  Tetrimino(Type type) {
+    this.type = type;
+    this.relativePositionsOriginal = type.relativePositions;
+    this.relativePositions = type.relativePositions;
+    this.originDelta = type.originDelta;
   }
 
   public void initPosition() {
@@ -75,7 +57,7 @@ public enum Tetrimino {
   }
 
   public void rotate(Stage stage) {
-    if (this == SQUARE) {
+    if (this.type == Type.SQUARE) {
       return;
     }
     int[][] rotated = new int[][] {
@@ -135,5 +117,36 @@ public enum Tetrimino {
         new int[] {originColumn + relativePositions[2][INDEX_COLUMN], originRow + relativePositions[2][INDEX_ROW]},
         new int[] {originColumn + relativePositions[3][INDEX_COLUMN], originRow + relativePositions[3][INDEX_ROW]}
     };
+  }
+
+  private enum Type {
+    // xx
+    // xo
+    SQUARE(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{-1, 1}}, new float[] {0.f, -1f}),
+    //  x
+    // xox
+    MOUNTAIN(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{0, 1}}, new float[] {-0.5f, -1f}),
+    // x
+    // xox
+    MIRROR_L(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{-1, 1}}, new float[] {-0.5f, -1f}),
+    //   x
+    // xox
+    L(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{1, 1}}, new float[] {-0.5f, -1f}),
+    // xx
+    //  ox
+    Z(new int[][] {new int[]{1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{-1, 1}}, new float[] {-0.5f, -1f}),
+    //  xx
+    // xo
+    S(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{0, 1}, new int[]{1, 1}}, new float[] {-0.5f, -1f}),
+    // xoxx
+    BAR(new int[][] {new int[]{-1, 0}, new int[]{0, 0}, new int[]{1, 0}, new int[]{2, 0}}, new float[] {-1f, -0.5f});
+
+    private int[][] relativePositions;
+    private final float[] originDelta;
+
+    Type(int[][] relativePositions, float[] originDelta) {
+      this.relativePositions = relativePositions;
+      this.originDelta = originDelta;
+    }
   }
 }
