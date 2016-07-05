@@ -13,7 +13,7 @@ import static jp.gr.java_conf.daisy.tetris.Stage.NUM_ROWS;
 /**
  * Group of four square that falling together.
  */
-public class Tetrimino {
+public class Tetromino {
 
   private static final Type[] TYPE = Type.values();
   private static Random random = new Random();
@@ -27,13 +27,13 @@ public class Tetrimino {
   private final int[][] relativePositionsOriginal;
   private final float[] originDelta;
 
-  public static Tetrimino getInstance() {
-    Tetrimino tetrimino = new Tetrimino(TYPE[random.nextInt(TYPE.length)]);
-    tetrimino.initPosition();
-    return tetrimino;
+  public static Tetromino getInstance() {
+    Tetromino tetromino = new Tetromino(TYPE[random.nextInt(TYPE.length)]);
+    tetromino.initPosition();
+    return tetromino;
   }
 
-  Tetrimino(Type type) {
+  Tetromino(Type type) {
     this.type = type;
     this.relativePositionsOriginal = type.relativePositions;
     this.relativePositions = type.relativePositions;

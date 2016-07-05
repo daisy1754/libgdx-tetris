@@ -32,8 +32,8 @@ public class Tetris extends ApplicationAdapter {
   private long lastHorizontalMoveMillis;
   private long lastFallMillis;
   private float fallingSpeed;
-  private Tetrimino currentTetrimino;
-  private Tetrimino nextTetrimino;
+  private Tetromino currentTetromino;
+  private Tetromino nextTetromino;
   private OrthographicCamera camera;
   private SpriteBatch batch;
   private ShapeRenderer renderer;
@@ -58,8 +58,8 @@ public class Tetris extends ApplicationAdapter {
     renderer = new ShapeRenderer();
     fallingSpeed = 4.5f; // blocks per seconds
     stage = new Stage();
-    currentTetrimino = Tetrimino.getInstance();
-    nextTetrimino = Tetrimino.getInstance();
+    currentTetromino = Tetromino.getInstance();
+    nextTetromino = Tetromino.getInstance();
   }
 
   @Override
@@ -77,8 +77,8 @@ public class Tetris extends ApplicationAdapter {
         isGameGoing = true;
         stage.reset();
         score = 0;
-        currentTetrimino = Tetrimino.getInstance();
-        nextTetrimino = Tetrimino.getInstance();
+        currentTetromino = Tetromino.getInstance();
+        nextTetromino = Tetromino.getInstance();
       }
       return;
     }
@@ -86,34 +86,34 @@ public class Tetris extends ApplicationAdapter {
     boolean rotateInput = Gdx.input.isTouched() || Gdx.input.isKeyPressed(Input.Keys.SPACE);
     if (TimeUtils.millis() - lastFallMillis > (1 / fallingSpeed) * 1000) {
       lastFallMillis = TimeUtils.millis();
-      currentTetrimino.fall();
+      currentTetromino.fall();
     } else if (rotateInput && TimeUtils.millis() - lastRotateMillis > MIN_ROTATE_INTERVAL_MILLIS) {
-      currentTetrimino.rotate(stage);
+      currentTetromino.rotate(stage);
       lastRotateMillis = TimeUtils.millis();
     }
 
-    if (stage.isOnGround(currentTetrimino.getBlocks())) {
-      int numDeletedRows = stage.setBlocks(currentTetrimino.getBlocks());
+    if (stage.isOnGround(currentTetromino.getBlocks())) {
+      int numDeletedRows = stage.setBlocks(currentTetromino.getBlocks());
       score += SCORES[numDeletedRows];
-      currentTetrimino = nextTetrimino;
-      currentTetrimino.initPosition();
-      nextTetrimino = Tetrimino.getInstance();
-      if (stage.isOnGround(currentTetrimino.getBlocks())) {
+      currentTetromino = nextTetromino;
+      currentTetromino.initPosition();
+      nextTetromino = Tetromino.getInstance();
+      if (stage.isOnGround(currentTetromino.getBlocks())) {
         isGameGoing = false;
         return;
       }
     } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)
         && TimeUtils.millis() - lastHorizontalMoveMillis > MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS) {
-      currentTetrimino.moveToLeft(stage);
+      currentTetromino.moveToLeft(stage);
       lastHorizontalMoveMillis = TimeUtils.millis();
     } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)
         && TimeUtils.millis() - lastHorizontalMoveMillis > MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS) {
-      currentTetrimino.moveToRight(stage);
+      currentTetromino.moveToRight(stage);
       lastHorizontalMoveMillis = TimeUtils.millis();
     } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)
         && TimeUtils.millis() - lastFallMillis > MIN_FALL_INTERVAL_MILLIS) {
       lastFallMillis = TimeUtils.millis();
-      currentTetrimino.fall();
+      currentTetromino.fall();
     }
 
     camera.update();
@@ -145,9 +145,9 @@ public class Tetris extends ApplicationAdapter {
     renderer.setColor(Color.BLACK);
     renderer.rect(STAGE_START_X, STAGE_START_Y, CELL_SIZE * NUM_COLUMNS, CELL_SIZE * NUM_ROWS);
     renderer.rect(nextTetriminoBoxX, nextTetriminoBoxY, NEXT_TETROIMINO_SIZE, NEXT_TETROIMINO_SIZE);
-    nextTetrimino.render(renderer, nextTetriminoBoxX, nextTetriminoBoxY, NEXT_TETROIMINO_SIZE / 4);
+    nextTetromino.render(renderer, nextTetriminoBoxX, nextTetriminoBoxY, NEXT_TETROIMINO_SIZE / 4);
 
-    currentTetrimino.render(renderer);
+    currentTetromino.render(renderer);
     stage.render(renderer);
 
     renderer.end();
