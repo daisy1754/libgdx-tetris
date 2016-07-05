@@ -10,9 +10,9 @@ import static jp.gr.java_conf.daisy.tetris.Constants.INDEX_COLUMN;
 import static jp.gr.java_conf.daisy.tetris.Constants.INDEX_ROW;
 
 /**
- * Holds the state of current stage, i.e., where blocks exist.
+ * Holds the state of current game stage, i.e., where blocks exist.
  */
-public class Stage {
+public class GameStage {
 
   public static final int NUM_COLUMNS = 10;
   public static final int NUM_ROWS = 22;

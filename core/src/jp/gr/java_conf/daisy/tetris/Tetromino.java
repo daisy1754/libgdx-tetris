@@ -7,8 +7,8 @@ import java.util.Random;
 
 import static jp.gr.java_conf.daisy.tetris.Constants.INDEX_COLUMN;
 import static jp.gr.java_conf.daisy.tetris.Constants.INDEX_ROW;
-import static jp.gr.java_conf.daisy.tetris.Stage.NUM_COLUMNS;
-import static jp.gr.java_conf.daisy.tetris.Stage.NUM_ROWS;
+import static jp.gr.java_conf.daisy.tetris.GameStage.NUM_COLUMNS;
+import static jp.gr.java_conf.daisy.tetris.GameStage.NUM_ROWS;
 
 /**
  * Group of four square that falling together.
@@ -56,7 +56,7 @@ public class Tetromino {
     originRow--;
   }
 
-  public void rotate(Stage stage) {
+  public void rotate(GameStage gameStage) {
     if (this.type == Type.SQUARE) {
       return;
     }
@@ -66,27 +66,27 @@ public class Tetromino {
         new int[] {-relativePositions[2][INDEX_ROW], relativePositions[2][INDEX_COLUMN]},
         new int[] {-relativePositions[3][INDEX_ROW], relativePositions[3][INDEX_COLUMN]}};
     int[][] newPositions = getBlocks(rotated);
-    if (stage.canPlaceBlocks(newPositions)) {
+    if (gameStage.canPlaceBlocks(newPositions)) {
       relativePositions = rotated;
     }
   }
 
-  public void moveToLeft(Stage stage) {
+  public void moveToLeft(GameStage gameStage) {
     int[][] blocks = getBlocks();
     for (int[] block: blocks) {
       block[INDEX_COLUMN]--;
     }
-    if (stage.canPlaceBlocks(blocks)) {
+    if (gameStage.canPlaceBlocks(blocks)) {
       originColumn--;
     }
   }
 
-  public void moveToRight(Stage stage) {
+  public void moveToRight(GameStage gameStage) {
     int[][] blocks = getBlocks();
     for (int[] block: blocks) {
       block[INDEX_COLUMN]++;
     }
-    if (stage.canPlaceBlocks(blocks)) {
+    if (gameStage.canPlaceBlocks(blocks)) {
       originColumn++;
     }
   }

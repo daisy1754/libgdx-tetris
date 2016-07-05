@@ -13,8 +13,8 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 import static jp.gr.java_conf.daisy.tetris.Constants.STAGE_HEIGHT;
 import static jp.gr.java_conf.daisy.tetris.Constants.STAGE_WIDTH;
-import static jp.gr.java_conf.daisy.tetris.Stage.NUM_COLUMNS;
-import static jp.gr.java_conf.daisy.tetris.Stage.NUM_ROWS;
+import static jp.gr.java_conf.daisy.tetris.GameStage.NUM_COLUMNS;
+import static jp.gr.java_conf.daisy.tetris.GameStage.NUM_ROWS;
 
 public class Tetris extends ApplicationAdapter {
 
@@ -39,7 +39,7 @@ public class Tetris extends ApplicationAdapter {
   private ShapeRenderer renderer;
   private BitmapFont gameoverFont;
   private BitmapFont scoreFont;
-  private Stage stage;
+  private GameStage gameStage;
   private int score;
 
   public static void renderBlock(ShapeRenderer renderer, int column, int row) {
@@ -57,7 +57,7 @@ public class Tetris extends ApplicationAdapter {
     scoreFont.setColor(Color.WHITE);
     renderer = new ShapeRenderer();
     fallingSpeed = 4.5f; // blocks per seconds
-    stage = new Stage();
+    gameStage = new GameStage();
     currentTetromino = Tetromino.getInstance();
     nextTetromino = Tetromino.getInstance();
   }
@@ -75,7 +75,7 @@ public class Tetris extends ApplicationAdapter {
       // Restart
       if (Gdx.input.isTouched() || Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
         isGameGoing = true;
-        stage.reset();
+        gameStage.reset();
         score = 0;
         currentTetromino = Tetromino.getInstance();
         nextTetromino = Tetromino.getInstance();
@@ -88,27 +88,27 @@ public class Tetris extends ApplicationAdapter {
       lastFallMillis = TimeUtils.millis();
       currentTetromino.fall();
     } else if (rotateInput && TimeUtils.millis() - lastRotateMillis > MIN_ROTATE_INTERVAL_MILLIS) {
-      currentTetromino.rotate(stage);
+      currentTetromino.rotate(gameStage);
       lastRotateMillis = TimeUtils.millis();
     }
 
-    if (stage.isOnGround(currentTetromino.getBlocks())) {
-      int numDeletedRows = stage.setBlocks(currentTetromino.getBlocks());
+    if (gameStage.isOnGround(currentTetromino.getBlocks())) {
+      int numDeletedRows = gameStage.setBlocks(currentTetromino.getBlocks());
       score += SCORES[numDeletedRows];
       currentTetromino = nextTetromino;
       currentTetromino.initPosition();
       nextTetromino = Tetromino.getInstance();
-      if (stage.isOnGround(currentTetromino.getBlocks())) {
+      if (gameStage.isOnGround(currentTetromino.getBlocks())) {
         isGameGoing = false;
         return;
       }
     } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)
         && TimeUtils.millis() - lastHorizontalMoveMillis > MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS) {
-      currentTetromino.moveToLeft(stage);
+      currentTetromino.moveToLeft(gameStage);
       lastHorizontalMoveMillis = TimeUtils.millis();
     } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)
         && TimeUtils.millis() - lastHorizontalMoveMillis > MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS) {
-      currentTetromino.moveToRight(stage);
+      currentTetromino.moveToRight(gameStage);
       lastHorizontalMoveMillis = TimeUtils.millis();
     } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)
         && TimeUtils.millis() - lastFallMillis > MIN_FALL_INTERVAL_MILLIS) {
@@ -148,7 +148,7 @@ public class Tetris extends ApplicationAdapter {
     nextTetromino.render(renderer, nextTetriminoBoxX, nextTetriminoBoxY, NEXT_TETROIMINO_SIZE / 4);
 
     currentTetromino.render(renderer);
-    stage.render(renderer);
+    gameStage.render(renderer);
 
     renderer.end();
 
