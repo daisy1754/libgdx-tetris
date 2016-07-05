@@ -9,8 +9,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import static jp.gr.java_conf.daisy.tetris.Constants.CELL_SIZE;
 import static jp.gr.java_conf.daisy.tetris.Constants.STAGE_HEIGHT;
 import static jp.gr.java_conf.daisy.tetris.Constants.STAGE_WIDTH;
 import static jp.gr.java_conf.daisy.tetris.GameStage.NUM_COLUMNS;
@@ -20,7 +23,6 @@ public class Tetris extends ApplicationAdapter {
 
   private static final int STAGE_START_X = 25;
   private static final int STAGE_START_Y = 20;
-  private static final int CELL_SIZE = 32;
   private static final int NEXT_TETROIMINO_SIZE = 80;
   private static final int MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS = 50;
   private static final int MIN_FALL_INTERVAL_MILLIS = 50;
@@ -34,6 +36,7 @@ public class Tetris extends ApplicationAdapter {
   private float fallingSpeed;
   private Tetromino currentTetromino;
   private Tetromino nextTetromino;
+  private Stage stage;
   private OrthographicCamera camera;
   private SpriteBatch batch;
   private ShapeRenderer renderer;
@@ -48,8 +51,10 @@ public class Tetris extends ApplicationAdapter {
 
   @Override
   public void create() {
+    stage = new Stage(new FitViewport(Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT));
+    Gdx.input.setInputProcessor(stage);
     camera = new OrthographicCamera();
-    camera.setToOrtho(false, 480, 800);
+    camera.setToOrtho(false, Constants.STAGE_WIDTH, Constants.STAGE_HEIGHT);
     batch = new SpriteBatch();
     gameoverFont = new BitmapFont();
     gameoverFont.setColor(Color.BLUE);
@@ -60,6 +65,13 @@ public class Tetris extends ApplicationAdapter {
     gameStage = new GameStage();
     currentTetromino = Tetromino.getInstance();
     nextTetromino = Tetromino.getInstance();
+
+    gameStage.setPosition(STAGE_START_X, STAGE_START_Y);
+    stage.addActor(gameStage);
+  }
+
+  public void resize (int width, int height) {
+    stage.getViewport().update(width, height, true);
   }
 
   @Override
@@ -123,6 +135,7 @@ public class Tetris extends ApplicationAdapter {
 
   @Override
   public void dispose() {
+    stage.dispose();
     batch.dispose();
     renderer.dispose();
     gameoverFont.dispose();
@@ -148,7 +161,6 @@ public class Tetris extends ApplicationAdapter {
     nextTetromino.render(renderer, nextTetriminoBoxX, nextTetriminoBoxY, NEXT_TETROIMINO_SIZE / 4);
 
     currentTetromino.render(renderer);
-    gameStage.render(renderer);
 
     renderer.end();
 
@@ -156,5 +168,8 @@ public class Tetris extends ApplicationAdapter {
     batch.begin();
     scoreFont.draw(batch, String.format("Score: %d", score), nextTetriminoBoxX, nextTetriminoBoxY - 30);
     batch.end();
+
+    stage.act(Gdx.graphics.getDeltaTime());
+    stage.draw();
   }
 }

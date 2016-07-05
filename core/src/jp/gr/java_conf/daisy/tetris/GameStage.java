@@ -1,23 +1,27 @@
 package jp.gr.java_conf.daisy.tetris;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import static jp.gr.java_conf.daisy.tetris.Constants.CELL_SIZE;
 import static jp.gr.java_conf.daisy.tetris.Constants.INDEX_COLUMN;
 import static jp.gr.java_conf.daisy.tetris.Constants.INDEX_ROW;
 
 /**
  * Holds the state of current game stage, i.e., where blocks exist.
  */
-public class GameStage {
+public class GameStage extends Actor {
 
   public static final int NUM_COLUMNS = 10;
   public static final int NUM_ROWS = 22;
 
   private boolean[][] isFilled = new boolean[NUM_COLUMNS][NUM_ROWS];
+  private ShapeRenderer shapeRenderer = new ShapeRenderer();
 
   public void reset() {
     for (int i = 0; i < NUM_COLUMNS; i++) {
@@ -85,15 +89,25 @@ public class GameStage {
     return true;
   }
 
-  public void render(ShapeRenderer renderer) {
-    renderer.setColor(Color.GRAY);
+
+  @Override
+  public void draw(Batch batch, float parentAlpha) {
+    batch.end();
+    shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+    shapeRenderer.setTransformMatrix(batch.getTransformMatrix());
+    shapeRenderer.translate(getX(), getY(), 0);
+
+    shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+    shapeRenderer.setColor(Color.GRAY);
     for (int i = 0; i < NUM_COLUMNS; i++) {
       for (int j = 0; j < NUM_ROWS; j++) {
         if (isFilled[i][j]) {
-          Tetris.renderBlock(renderer, i, j);
+          shapeRenderer.rect(i * CELL_SIZE, j * CELL_SIZE, CELL_SIZE, CELL_SIZE);
         }
       }
     }
+    shapeRenderer.end();
+    batch.begin();
   }
 
   private boolean isRowFilled(int r) {
