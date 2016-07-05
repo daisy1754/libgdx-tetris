@@ -97,16 +97,27 @@ public class GameStage extends Actor {
     shapeRenderer.setTransformMatrix(batch.getTransformMatrix());
     shapeRenderer.translate(getX(), getY(), 0);
 
+    // Border
+    shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+    shapeRenderer.setColor(Color.RED);
+    shapeRenderer.rect(0, 0, CELL_SIZE * NUM_COLUMNS + 2, CELL_SIZE * NUM_ROWS + 2);
+    shapeRenderer.end();
+
+    // Background
     shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+    shapeRenderer.setColor(Color.BLACK);
+    shapeRenderer.rect(1, 1, CELL_SIZE * NUM_COLUMNS, CELL_SIZE * NUM_ROWS);
+
     shapeRenderer.setColor(Color.GRAY);
     for (int i = 0; i < NUM_COLUMNS; i++) {
       for (int j = 0; j < NUM_ROWS; j++) {
         if (isFilled[i][j]) {
-          shapeRenderer.rect(i * CELL_SIZE, j * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+          shapeRenderer.rect(i * CELL_SIZE + 1, j * CELL_SIZE + 1, CELL_SIZE, CELL_SIZE);
         }
       }
     }
     shapeRenderer.end();
+
     batch.begin();
   }
 

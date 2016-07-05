@@ -143,33 +143,24 @@ public class Tetris extends ApplicationAdapter {
   }
 
   private void renderStage() {
+    stage.act(Gdx.graphics.getDeltaTime());
+    stage.draw();
+
     renderer.setProjectionMatrix(camera.combined);
-
     renderer.begin(ShapeRenderer.ShapeType.Line);
-    renderer.setColor(Color.RED);
-    renderer.rect(STAGE_START_X - 1, STAGE_START_Y - 1, CELL_SIZE * NUM_COLUMNS + 2, CELL_SIZE * NUM_ROWS + 2);
-
     int nextTetriminoBoxX = CELL_SIZE * NUM_COLUMNS + 2 * STAGE_START_X;
     int nextTetriminoBoxY = STAGE_START_Y + CELL_SIZE * NUM_ROWS - NEXT_TETROIMINO_SIZE;
     renderer.rect(nextTetriminoBoxX - 1, nextTetriminoBoxY - 1, NEXT_TETROIMINO_SIZE + 2, NEXT_TETROIMINO_SIZE + 2);
     renderer.end();
 
     renderer.begin(ShapeRenderer.ShapeType.Filled);
-    renderer.setColor(Color.BLACK);
-    renderer.rect(STAGE_START_X, STAGE_START_Y, CELL_SIZE * NUM_COLUMNS, CELL_SIZE * NUM_ROWS);
-    renderer.rect(nextTetriminoBoxX, nextTetriminoBoxY, NEXT_TETROIMINO_SIZE, NEXT_TETROIMINO_SIZE);
-    nextTetromino.render(renderer, nextTetriminoBoxX, nextTetriminoBoxY, NEXT_TETROIMINO_SIZE / 4);
-
     currentTetromino.render(renderer);
-
+    nextTetromino.render(renderer, nextTetriminoBoxX, nextTetriminoBoxY, NEXT_TETROIMINO_SIZE / 4);
     renderer.end();
 
     batch.setProjectionMatrix(camera.combined);
     batch.begin();
     scoreFont.draw(batch, String.format("Score: %d", score), nextTetriminoBoxX, nextTetriminoBoxY - 30);
     batch.end();
-
-    stage.act(Gdx.graphics.getDeltaTime());
-    stage.draw();
   }
 }
