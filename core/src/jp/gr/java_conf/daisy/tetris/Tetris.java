@@ -28,8 +28,7 @@ import static jp.gr.java_conf.daisy.tetris.GameStage.NUM_ROWS;
 public class Tetris extends ApplicationAdapter {
 
   private static final int STAGE_START_X = 25;
-  private static final int STAGE_START_Y = 20;
-  private static final int CONTROL_BASE_Y = 480;
+  private static final int STAGE_START_Y = 90;
   private static final int NEXT_TETROIMINO_SIZE = 80;
   private static final int MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS = 50;
   private static final int MIN_FALL_INTERVAL_MILLIS = 50;
@@ -77,7 +76,7 @@ public class Tetris extends ApplicationAdapter {
     gameStage.setPosition(STAGE_START_X, STAGE_START_Y);
     stage.addActor(gameStage);
     Group controlGroup = new Group();
-    controlGroup.setPosition(STAGE_START_X + CELL_SIZE * NUM_COLUMNS + 5, CONTROL_BASE_Y);
+    controlGroup.setPosition(80, 5);
     Texture leftArrowTexture = new Texture(Gdx.files.internal("arrow_left.png"));
     Image leftArrow = new Image(leftArrowTexture);
     Texture rightArrowTexture = new Texture(Gdx.files.internal("arrow_right.png"));
@@ -90,10 +89,14 @@ public class Tetris extends ApplicationAdapter {
     registerSoftKeyPressEvent(rightArrow, SoftKey.RIGHT);
     registerSoftKeyPressEvent(circle, SoftKey.ROTATE);
     registerSoftKeyPressEvent(downArrow, SoftKey.DOWN);
-    downArrow.setPosition(42, 0);
-    leftArrow.setPosition(0, 42);
-    circle.setPosition(46, 48);
-    rightArrow.setPosition(84, 42);
+    leftArrow.scaleBy(1.1f);
+    rightArrow.scaleBy(1.1f);
+    circle.scaleBy(1.1f);
+    downArrow.scaleBy(1.1f);
+    leftArrow.setPosition(0, 0);
+    downArrow.setPosition(90, 0);
+    rightArrow.setPosition(180, 0);
+    circle.setPosition(270, 0);
     controlGroup.addActor(rightArrow);
     controlGroup.addActor(leftArrow);
     controlGroup.addActor(circle);
