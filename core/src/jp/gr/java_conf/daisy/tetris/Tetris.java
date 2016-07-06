@@ -6,10 +6,16 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -23,6 +29,7 @@ public class Tetris extends ApplicationAdapter {
 
   private static final int STAGE_START_X = 25;
   private static final int STAGE_START_Y = 20;
+  private static final int CONTROL_BASE_Y = 480;
   private static final int NEXT_TETROIMINO_SIZE = 80;
   private static final int MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS = 50;
   private static final int MIN_FALL_INTERVAL_MILLIS = 50;
@@ -44,6 +51,7 @@ public class Tetris extends ApplicationAdapter {
   private BitmapFont scoreFont;
   private GameStage gameStage;
   private int score;
+  private SoftKey lastPressedSoftKey;
 
   public static void renderBlock(ShapeRenderer renderer, int column, int row) {
     renderer.rect(STAGE_START_X + column * CELL_SIZE, STAGE_START_Y + row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
@@ -68,6 +76,29 @@ public class Tetris extends ApplicationAdapter {
 
     gameStage.setPosition(STAGE_START_X, STAGE_START_Y);
     stage.addActor(gameStage);
+    Group controlGroup = new Group();
+    controlGroup.setPosition(STAGE_START_X + CELL_SIZE * NUM_COLUMNS + 5, CONTROL_BASE_Y);
+    Texture leftArrowTexture = new Texture(Gdx.files.internal("arrow_left.png"));
+    Image leftArrow = new Image(leftArrowTexture);
+    Texture rightArrowTexture = new Texture(Gdx.files.internal("arrow_right.png"));
+    Image rightArrow = new Image(rightArrowTexture);
+    Texture circleTexture = new Texture(Gdx.files.internal("circle.png"));
+    Image circle = new Image(circleTexture);
+    Texture downArrowTexture = new Texture(Gdx.files.internal("arrow_down.png"));
+    Image downArrow = new Image(downArrowTexture);
+    registerSoftKeyPressEvent(leftArrow, SoftKey.LEFT);
+    registerSoftKeyPressEvent(rightArrow, SoftKey.RIGHT);
+    registerSoftKeyPressEvent(circle, SoftKey.ROTATE);
+    registerSoftKeyPressEvent(downArrow, SoftKey.DOWN);
+    downArrow.setPosition(42, 0);
+    leftArrow.setPosition(0, 42);
+    circle.setPosition(46, 48);
+    rightArrow.setPosition(84, 42);
+    controlGroup.addActor(rightArrow);
+    controlGroup.addActor(leftArrow);
+    controlGroup.addActor(circle);
+    controlGroup.addActor(downArrow);
+    stage.addActor(controlGroup);
   }
 
   public void resize (int width, int height) {
@@ -95,11 +126,10 @@ public class Tetris extends ApplicationAdapter {
       return;
     }
 
-    boolean rotateInput = Gdx.input.isTouched() || Gdx.input.isKeyPressed(Input.Keys.SPACE);
     if (TimeUtils.millis() - lastFallMillis > (1 / fallingSpeed) * 1000) {
       lastFallMillis = TimeUtils.millis();
       currentTetromino.fall();
-    } else if (rotateInput && TimeUtils.millis() - lastRotateMillis > MIN_ROTATE_INTERVAL_MILLIS) {
+    } else if (isKeyPressed(Input.Keys.SPACE) && TimeUtils.millis() - lastRotateMillis > MIN_ROTATE_INTERVAL_MILLIS) {
       currentTetromino.rotate(gameStage);
       lastRotateMillis = TimeUtils.millis();
     }
@@ -114,16 +144,13 @@ public class Tetris extends ApplicationAdapter {
         isGameGoing = false;
         return;
       }
-    } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)
-        && TimeUtils.millis() - lastHorizontalMoveMillis > MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS) {
+    } else if (isKeyPressed(Input.Keys.LEFT) && TimeUtils.millis() - lastHorizontalMoveMillis > MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS) {
       currentTetromino.moveToLeft(gameStage);
       lastHorizontalMoveMillis = TimeUtils.millis();
-    } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)
-        && TimeUtils.millis() - lastHorizontalMoveMillis > MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS) {
+    } else if (isKeyPressed(Input.Keys.RIGHT) && TimeUtils.millis() - lastHorizontalMoveMillis > MIN_HORIZONTAL_MOVE_INTERVAL_MILLIS) {
       currentTetromino.moveToRight(gameStage);
       lastHorizontalMoveMillis = TimeUtils.millis();
-    } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)
-        && TimeUtils.millis() - lastFallMillis > MIN_FALL_INTERVAL_MILLIS) {
+    } else if (isKeyPressed(Input.Keys.DOWN) && TimeUtils.millis() - lastFallMillis > MIN_FALL_INTERVAL_MILLIS) {
       lastFallMillis = TimeUtils.millis();
       currentTetromino.fall();
     }
@@ -140,6 +167,23 @@ public class Tetris extends ApplicationAdapter {
     renderer.dispose();
     gameoverFont.dispose();
     scoreFont.dispose();
+  }
+
+  private boolean isKeyPressed(int hardKey) {
+    if (Gdx.input.isKeyPressed(hardKey)) {
+      return true;
+    }
+    switch (hardKey) {
+      case Input.Keys.RIGHT:
+        return lastPressedSoftKey == SoftKey.RIGHT;
+      case Input.Keys.LEFT:
+        return lastPressedSoftKey == SoftKey.LEFT;
+      case Input.Keys.DOWN:
+        return lastPressedSoftKey == SoftKey.DOWN;
+      case Input.Keys.SPACE:
+        return lastPressedSoftKey == SoftKey.ROTATE;
+    }
+    return false;
   }
 
   private void renderStage() {
@@ -162,5 +206,24 @@ public class Tetris extends ApplicationAdapter {
     batch.begin();
     scoreFont.draw(batch, String.format("Score: %d", score), nextTetriminoBoxX, nextTetriminoBoxY - 30);
     batch.end();
+  }
+
+  private void registerSoftKeyPressEvent(Actor softKey, final SoftKey key) {
+    softKey.addListener(new InputListener() {
+      @Override
+      public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+        lastPressedSoftKey = key;
+        return true;
+      }
+
+      @Override
+      public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+        lastPressedSoftKey = null;
+      }
+    });
+  }
+
+  private enum SoftKey {
+    DOWN, LEFT, RIGHT, ROTATE;
   }
 }
